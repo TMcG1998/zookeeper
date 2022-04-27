@@ -12,6 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
 
+// serve js and css to the html
+app.use(express.static('public'));
+
 function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
 
@@ -118,6 +121,26 @@ app.post('/api/animals', (req, res) => {
         const animal = createNewAnimal(req.body, animals);
         res.json(animal);
     }
+})
+
+// Display the home page -- Use res.sendFile rather than res.json
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+})
+
+// This route will take us to /animals. Typically if /api is in the link, it will display raw JSON, otherwise it should display HTML
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+})
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+})
+
+// This route means if any route isn't defined and a user somehow lands on it, they'll be redirected to the homepage
+// The '*' route should always be last, or it takes precedence over the other routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
 })
 
 app.listen(PORT, () => {
